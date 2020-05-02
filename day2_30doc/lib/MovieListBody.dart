@@ -4,22 +4,25 @@ import 'package:day1_30doc/MovieList.dart';
 List<MovieDisplayCard> databaseMovieList = [];
 
 class MovieListBody extends StatelessWidget {
-  void fetchMovies() {
-    MovieManager.loadGenres();
-    MovieManager.loadMovies();
-    for (int i = 0; i < 19; i++) {
-      databaseMovieList.add(MovieDisplayCard(i));
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    fetchMovies();
-    return Container(
-      width: double.infinity,
-      height: double.infinity,
-      child: ListView(
-        children: databaseMovieList,
+    for (int i = 0; i < MovieManager.catalogSize(); i++) {
+      databaseMovieList.add(MovieDisplayCard(i));
+    }
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.local_movies),
+          onPressed: () {},
+        ),
+        title: Text('Top 2020 Movies'),
+      ),
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+        child: ListView(
+          children: databaseMovieList,
+        ),
       ),
     );
   }
@@ -32,18 +35,29 @@ class MovieDisplayCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Color backColor = MovieManager.getAvatarColor();
-    return ListTile(
-      leading: CircleAvatar(
-        backgroundColor: backColor,
+    return Card(
+      child: ListTile(
+        leading: CircleAvatar(
+          backgroundColor: backColor,
+        ),
+        title: Text(
+          MovieManager.getTitle(movieNumber),
+          style: TextStyle(
+            fontWeight: FontWeight.w300,
+            fontSize: 20,
+          ),
+        ),
+        subtitle: Text(MovieManager.getGenre(movieNumber),
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+            )),
+        onTap: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => MovieDetails(movieNumber, backColor)));
+        },
       ),
-      title: Text(MovieManager.getTitle(movieNumber)),
-      subtitle: Text(MovieManager.getGenre(movieNumber)),
-      onTap: () {
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => MovieDetails(movieNumber, backColor)));
-      },
     );
   }
 }
@@ -64,9 +78,7 @@ class MovieDetails extends StatelessWidget {
           decoration: BoxDecoration(
             image: DecorationImage(
               fit: BoxFit.cover,
-              image: NetworkImage(
-                MovieManager.getImage(movieNumber),
-              ),
+              image: MovieManager.getImage(movieNumber),
             ),
           ),
           margin: EdgeInsets.all(0),
@@ -74,10 +86,11 @@ class MovieDetails extends StatelessWidget {
           width: double.infinity,
           padding: EdgeInsets.only(top: 0, left: 15, right: 15, bottom: 50),
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Spacer(),
               Flexible(
-                flex: 4,
+                flex: 2,
                 fit: FlexFit.loose,
                 child: Container(
                   padding: EdgeInsets.symmetric(horizontal: 10),

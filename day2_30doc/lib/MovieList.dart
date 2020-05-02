@@ -11,19 +11,7 @@ const String kMovieApiLink =
     'https://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&include_adult=true&year=2020&api_key=';
 
 Map<int, String> genre = {};
-List<Movie> movieDatabase = [
-  Movie(
-      title: 'BlooXXdshot',
-      genre: 'Action',
-      description:
-          "After he and his wife are murdered, marine Ray Garrison is resurrected by a team of scientists. Enhanced with nanotechnology, he becomes a superhuman, biotech killing machine - Bloodshot. As Ray first trains with fellow super-soldiers, he cannot recall anything from his former life. But when his memories flood back and he remembers the man that killed both him and his wife, he breaks out of the facility to get revenge, only to discover that there's more to the conspiracy than he thought."),
-  Movie(
-    title: 'No TiXXme to Die',
-    genre: 'Thriller/Adventure',
-    description:
-        "Recruited to rescue a kidnapped scientist, globe-trotting spy James Bond finds himself hot on the trail of a mysterious villain, who's armed with a dangerous new technology",
-  ),
-];
+List<Movie> movieDatabase = [];
 
 class Movie {
   Movie({@required this.title, this.genre, this.description, this.movieImage});
@@ -35,7 +23,7 @@ class Movie {
 }
 
 class MovieManager {
-  static void loadGenres() async {
+  static Future<void> loadGenres() async {
     http.Response genreResponse;
     try {
       genreResponse = await http.get('$kGenreApiLink$kApiKey');
@@ -49,17 +37,17 @@ class MovieManager {
     else {
       genre.clear();
       var genreResponseDecoded = jsonDecode(genreResponse.body)['genres'];
-      for (int i = 0; i < genreResponseDecoded.length - 1; i++) {
+      for (int i = 0; i < genreResponseDecoded.length; i++) {
         int id = genreResponseDecoded[i]['id'];
         String name = genreResponseDecoded[i]['name'];
 
         genre[id] = name;
       }
     }
-    print(genre.values);
+    
   }
 
-  static void loadMovies() async {
+  static Future<void> loadMovies() async {
     http.Response movieResponse;
     try {
       movieResponse = await http.get('$kMovieApiLink$kApiKey');
@@ -75,7 +63,7 @@ class MovieManager {
       movieDatabase.clear();
       var movieResponseDecoded = jsonDecode(movieResponse.body)['results'];
 
-      for (int i = 0; i < movieResponseDecoded.length - 1; i++) {
+      for (int i = 0; i < movieResponseDecoded.length; i++) {
         String movieTitle = movieResponseDecoded[i]['title'];
         List movieGenre = movieResponseDecoded[i]['genre_ids'];
         String movieDescription = movieResponseDecoded[i]['overview'];
@@ -100,9 +88,16 @@ class MovieManager {
   static String getDescription(int index) =>
       movieDatabase[index].description ?? 'No description available for movie';
 
-  static String getImage(int index) {
+  static ImageProvider getImage(int index) {
     String storedImage = movieDatabase[index].movieImage;
-    return storedImage == null ? null : '$kImageApiLink$storedImage';
+     ImageProvider img;
+    try{
+    img = NetworkImage(storedImage == null ? null : '$kImageApiLink$storedImage');
+
+    }catch(e){
+      img = null;
+    }
+    return img;
   }
 
   static Color getAvatarColor() => Color.fromARGB(Random().nextInt(100),
