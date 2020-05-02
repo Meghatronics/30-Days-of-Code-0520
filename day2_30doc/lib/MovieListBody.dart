@@ -1,21 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:day1_30doc/MovieList.dart';
 
-List<MovieDisplayCard> databaseMovieList=[];
+List<MovieDisplayCard> databaseMovieList = [];
 
 class MovieListBody extends StatelessWidget {
   void fetchMovies() {
-    MovieManager movie = MovieManager();
-    for (int i = 0; i < movie.catalogSize(); i++) {
+    MovieManager.loadGenres();
+    MovieManager.loadMovies();
+    for (int i = 0; i < 19; i++) {
       databaseMovieList.add(MovieDisplayCard(i));
     }
   }
 
-  
   @override
   Widget build(BuildContext context) {
-
-  fetchMovies();
+    fetchMovies();
     return Container(
       width: double.infinity,
       height: double.infinity,
@@ -27,20 +26,18 @@ class MovieListBody extends StatelessWidget {
 }
 
 class MovieDisplayCard extends StatelessWidget {
-
   MovieDisplayCard(this.movieNumber);
   final int movieNumber;
- 
+
   @override
   Widget build(BuildContext context) {
-    MovieManager movie = MovieManager();
-    Color backColor = movie.getAvatarColor();
+    Color backColor = MovieManager.getAvatarColor();
     return ListTile(
       leading: CircleAvatar(
         backgroundColor: backColor,
       ),
-      title: Text(movie.getTitle(movieNumber)),
-      subtitle: Text(movie.getCategory(movieNumber)),
+      title: Text(MovieManager.getTitle(movieNumber)),
+      subtitle: Text(MovieManager.getGenre(movieNumber)),
       onTap: () {
         Navigator.push(
             context,
@@ -55,58 +52,71 @@ class MovieDetails extends StatelessWidget {
   MovieDetails(this.movieNumber, this.backColor);
   final int movieNumber;
   final Color backColor;
- final MovieManager movie = MovieManager();
+
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        body: GestureDetector(
-          onTap: () {
-            Navigator.pop(context);
-          },
-          child: Container(
-            decoration: BoxDecoration(
-              color: backColor,
-              borderRadius: BorderRadius.all(Radius.elliptical(20, 14)),
+    return Scaffold(
+      body: GestureDetector(
+        onTap: () {
+          Navigator.pop(context);
+        },
+        child: Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              fit: BoxFit.cover,
+              image: NetworkImage(
+                MovieManager.getImage(movieNumber),
+              ),
             ),
-            margin: EdgeInsets.all(30),
-            height: double.infinity,
-            width: double.infinity,
-            padding: EdgeInsets.all(15),
-            child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Flexible(
-                    flex: 2,
-                    child: Text(
-                      movie.getTitle(movieNumber),
-                      style:
-                          TextStyle(fontSize: 40, fontWeight: FontWeight.w600),
-                    ),
+          ),
+          margin: EdgeInsets.all(0),
+          height: double.infinity,
+          width: double.infinity,
+          padding: EdgeInsets.only(top: 0, left: 15, right: 15, bottom: 50),
+          child: Column(
+            children: <Widget>[
+              Spacer(),
+              Flexible(
+                flex: 4,
+                fit: FlexFit.loose,
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 10),
+                  decoration: BoxDecoration(
+                    color: Colors.white70,
+                    borderRadius: BorderRadius.all(Radius.elliptical(20, 14)),
                   ),
-                  SizedBox(height: 20),
-                  Row(
-                    children: <Widget>[
-                      Icon(Icons.local_movies, color: Colors.black54),
-                      Text(
-                        movie.getCategory(movieNumber),
-                        style: TextStyle(
-                          fontStyle: FontStyle.italic,
-                          fontSize: 19,
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 15),
-
-                  Expanded(
-                      flex: 2,
-                      child: Text(movie.getDescription(movieNumber),
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        Text(
+                          MovieManager.getTitle(movieNumber),
                           style: TextStyle(
-                            fontSize: 19,
-                          ))),
-                ]),
+                              fontSize: 40, fontWeight: FontWeight.w600),
+                        ),
+                        SizedBox(height: 20),
+                        Row(
+                          children: <Widget>[
+                            Icon(Icons.local_movies, color: Colors.black54),
+                            Text(
+                              MovieManager.getGenre(movieNumber),
+                              style: TextStyle(
+                                fontStyle: FontStyle.italic,
+                                fontSize: 19,
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 15),
+                        Text(MovieManager.getDescription(movieNumber),
+                            style: TextStyle(
+                              fontSize: 19,
+                            )),
+                      ]),
+                ),
+              ),
+            ],
           ),
         ),
       ),
