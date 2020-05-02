@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:day1_30doc/MovieList.dart';
 
-
+List<MovieDisplayCard> databaseMovieList=[];
 
 class MovieListBody extends StatelessWidget {
-  List<MovieDisplayCard> databaseMovieList;
- MovieManager movie = MovieManager();
   void fetchMovies() {
+    MovieManager movie = MovieManager();
     for (int i = 0; i < movie.catalogSize(); i++) {
       databaseMovieList.add(MovieDisplayCard(i));
     }
@@ -15,7 +14,8 @@ class MovieListBody extends StatelessWidget {
   
   @override
   Widget build(BuildContext context) {
-  
+
+  fetchMovies();
     return Container(
       width: double.infinity,
       height: double.infinity,
@@ -30,9 +30,10 @@ class MovieDisplayCard extends StatelessWidget {
 
   MovieDisplayCard(this.movieNumber);
   final int movieNumber;
- final MovieManager movie = MovieManager();
+ 
   @override
   Widget build(BuildContext context) {
+    MovieManager movie = MovieManager();
     Color backColor = movie.getAvatarColor();
     return ListTile(
       leading: CircleAvatar(

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
+const String kApiKey = '083b7597c1950574aa4f4ad93abbc459';
 
 class Movie {
   Movie({@required this.title, this.category, this.description});
@@ -11,6 +14,13 @@ class Movie {
 }
 
 class MovieManager {
+  void getMovies() async {
+    var response = await http.get(
+        'https://api.themoviedb.org/3/genre/movie/list?api_key=$kApiKey&language=en-US');
+    if (response.statusCode !=200) print(response.statusCode);
+    else   print(response.body);
+  }
+
   final List<Movie> _movieDatabase = [
     Movie(
         title: 'Bloodshot',

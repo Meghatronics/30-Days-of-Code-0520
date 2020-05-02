@@ -1,3 +1,4 @@
+import 'package:day1_30doc/MovieList.dart';
 import 'package:flutter/material.dart';
 import 'package:day1_30doc/MovieListBody.dart';
 
@@ -12,7 +13,10 @@ class MovieListing extends StatelessWidget {
         home: SafeArea(
           child: Scaffold(
             appBar: AppBar(
-              leading: Icon(Icons.local_movies),
+              leading: IconButton(icon: Icon(Icons.local_movies), onPressed: (){
+                MovieManager test = MovieManager();
+                test.getMovies();
+              }, ),
               backgroundColor: Color.fromARGB(120, 240, 50, 100),
               title: Text('Top 2020 Movies'),
             ),
